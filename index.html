@@ -937,7 +937,8 @@ function downloadPDF(){
   .output{font-size:18px;line-height:2.2;word-break:break-all;letter-spacing:1px;}
   .data{font-size:1px;color:#000;user-select:none;position:absolute;top:-9999px;}
   @media print{
-    body{background:#000!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+    body{background:#000!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;margin:0!important;padding:20px!important;}
+    @page{margin:0;size:auto;}
   }
 </style>
 </head><body>
