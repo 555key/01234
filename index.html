@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0052)file:///Users/lukewilliams/Downloads/geoC%20(1).html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Geometric Cipher v2</title>
 <style>
@@ -61,9 +61,9 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
 .cb3{background:#ffffff;outline:1px solid #555;}
 .cb4{background:#111111;}
 </style>
-<script src="./index_files/qrcode.min.js"></script>
-<script src="./index_files/jsQR.min.js"></script>
-<link href="./index_files/css2" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tibetan:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="wrap">
@@ -77,8 +77,8 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
 <div class="key-section">
   <div class="key-title">Key Configuration</div>
   <div class="row" style="margin-bottom:10px;">
-    <button onclick="copyKey()" class="primary">🔑 Copy Key</button>
-    <button onclick="pasteKey()">📋 Paste Key</button>
+    <button onclick="copyKey()" class="primary">&#128273; Copy Key</button>
+    <button onclick="pasteKey()">&#128203; Paste Key</button>
     <span class="err" id="key-err" style="color:#1D9E75;"></span>
   </div>
   <div class="row">
@@ -93,7 +93,7 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
   <hr class="divider">
   <div class="row">
     <label>GF(5) starting axes (permutation of 0–4):</label>
-    <input type="text" id="axis-input" value="01234" maxlength="5" style="width:80px">
+    <input type="text" id="axis-input" value="01234" maxlength="5" style="width:80px"/>
     <button onclick="applyAxes()">Apply</button>
     <button onclick="randomAxes()">Randomise</button>
     <button onclick="resetAxes()">Reset</button>
@@ -101,9 +101,9 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
   </div>
   <div class="row">
     <label>GF(5) rotation step (1–4):</label>
-    <input type="number" id="step-input" value="1" min="1" max="4" style="width:55px">
+    <input type="number" id="step-input" value="1" min="1" max="4" style="width:55px"/>
     <label style="margin-left:16px">Direction:</label>
-    <button id="dir-btn" onclick="toggleDirection()" style="min-width:130px">↻ Clockwise</button>
+    <button id="dir-btn" onclick="toggleDirection()" style="min-width:130px">&#8635; Clockwise</button>
   </div>
   <div class="row">
     <label>Current GF(5) axes:</label>
@@ -118,15 +118,18 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
     <label>Message:</label>
     <textarea id="msg-input" rows="2" placeholder="type a message..." style="width:300px;vertical-align:top;"></textarea>
     <button class="primary" onclick="encodeMessage()" style="vertical-align:top;">Encode</button>
-    <button onclick="generateQR()" style="vertical-align:top;">QR Code ▦</button>
+    <button onclick="generateQR()" style="vertical-align:top;">QR Code &#9638;</button>
+    <button onclick="downloadPDF()" style="vertical-align:top;">&#8595; PDF</button>
+    <label for="pdf-upload" style="padding:7px 14px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;vertical-align:top;">&#8593; Read PDF</label>
+    <input type="file" id="pdf-upload" accept=".html,.htm" style="display:none;" onchange="readPDF(this)"/>
   </div>
   <div class="toggle-row">
-    <button class="toggle-btn active" id="btn-num" onclick="setOutputMode(&#39;numbers&#39;)">Numbers (0–4)</button>
-    <button class="toggle-btn" id="btn-col" onclick="setOutputMode(&#39;colours&#39;)">■ Colours</button>
-    <button class="toggle-btn" id="btn-dot" onclick="setOutputMode(&#39;dots&#39;)">·∶∴∷ Dots</button>
-    <button class="toggle-btn" id="btn-alc" onclick="setOutputMode(&#39;alchemical&#39;)">🜂 Elements</button>
-    <button class="toggle-btn" id="btn-chi" onclick="setOutputMode(&#39;chinese&#39;)">一 Chinese</button>
-    <button class="toggle-btn" id="btn-kan" onclick="setOutputMode(&#39;kanji&#39;)">ལམ ཁམ རམ</button>
+    <button class="toggle-btn active" id="btn-num" onclick="setOutputMode('numbers')">Numbers (0–4)</button>
+    <button class="toggle-btn" id="btn-col" onclick="setOutputMode('colours')">&#9632; Colours</button>
+    <button class="toggle-btn" id="btn-dot" onclick="setOutputMode('dots')">·∶∴∷ Dots</button>
+    <button class="toggle-btn" id="btn-alc" onclick="setOutputMode('alchemical')">🜂 Elements</button>
+    <button class="toggle-btn" id="btn-chi" onclick="setOutputMode('chinese')">一 Chinese</button>
+    <button class="toggle-btn" id="btn-kan" onclick="setOutputMode('kanji')">ལམ ཁམ རམ</button>
     <button class="toggle-btn" id="btn-cus" onclick="toggleCustomSection()">✏ Custom</button>
   </div>
   </div>
@@ -161,9 +164,9 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
   </div>
   <div class="row">
     <button class="primary" onclick="decodeMessage()">Decode</button>
-    <button onclick="document.getElementById(&#39;decode-input&#39;).value=&#39;&#39;;document.getElementById(&#39;decode-output&#39;).textContent=&#39;&#39;;">Clear</button>
-    <label for="qr-upload" style="padding:7px 14px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;">📷 Upload QR Image</label>
-    <input type="file" id="qr-upload" accept="image/*" style="display:none;" onchange="readQRFromImage(this)">
+    <button onclick="document.getElementById('decode-input').value='';document.getElementById('decode-output').textContent='';">Clear</button>
+    <label for="qr-upload" style="padding:7px 14px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;">&#128247; Upload QR Image</label>
+    <input type="file" id="qr-upload" accept="image/*" style="display:none;" onchange="readQRFromImage(this)"/>
     <span class="err" id="decode-err"></span>
   </div>
   <canvas id="qr-read-canvas" style="display:none;"></canvas>
@@ -189,7 +192,7 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
   </div>
 </div>
 
-<canvas id="cv" height="560" width="860"></canvas>
+<canvas id="cv" height="560"></canvas>
 <div class="legend">
   <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Blue planes 0–2</div>
   <div class="leg-item"><div class="leg-dot" style="background:#D85A30"></div>Orange planes 3–5</div>
@@ -197,7 +200,7 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
   <div class="leg-item"><div class="leg-dot" style="background:#9B59B6"></div>Active character</div>
 </div>
 <div class="result-row" id="result-row"></div>
-
+</div>
 
 <script>
 const DEFAULT_LAYOUT='abcdefghijklmnopqrstuvwxyz '.split('');
@@ -917,6 +920,86 @@ async function readQRFromImage(input){
   err.textContent='QR library not loaded yet — make sure you are online for first use, then try again';
 }
 
+// ── PDF DOWNLOAD ─────────────────────────────────────────────
+function downloadPDF(){
+  if(!encoded.length){alert('Encode a message first');return;}
+  const box=document.getElementById('output-box');
+  const digits=encoded.filter(e=>!e.skip).map(e=>e.token).join('');
+  const outputHTML=box.innerHTML;
+  
+  // Build a self-contained HTML page and convert to blob download
+  const html=`<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>Quincunx Cipher — Encoded Output</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tibetan&display=swap" rel="stylesheet">
+<style>
+  body{background:#000;color:#fff;padding:40px;font-family:Arial,sans-serif;margin:0;}
+  .header{font-size:10px;color:#333;margin-bottom:20px;letter-spacing:0.15em;text-transform:uppercase;}
+  .output{font-size:18px;line-height:2.2;word-break:break-all;letter-spacing:1px;}
+  .footer{font-size:9px;color:#222;margin-top:30px;border-top:1px solid #111;padding-top:10px;}
+  .data{font-size:1px;color:#000;user-select:none;}
+  @media print{
+    body{background:#000!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  }
+</style>
+</head><body>
+<div class="header">QUINCUNX CIPHER &mdash; ENCODED OUTPUT &mdash; MODE: ${outputMode.toUpperCase()} &mdash; quincunxcipher.com</div>
+<div class="output">${outputHTML}</div>
+<div class="footer">Decode with correct key only &bull; quincunxcipher.com</div>
+<div class="data">QUINCUNX_DATA:${digits}</div>
+</body></html>`;
+
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='quincunx_encoded.html';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── HTML FILE UPLOAD / READ ──────────────────────────────────
+function readPDF(input){
+  const file=input.files[0];
+  if(!file)return;
+  input.value='';
+  const err=document.getElementById('decode-err');
+  err.style.color='#1D9E75';
+  err.textContent='Reading file...';
+  
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const text=e.target.result;
+    // Look for embedded data marker
+    const marker='QUINCUNX_DATA:';
+    const markerIdx=text.indexOf(marker);
+    let digits='';
+    
+    if(markerIdx>=0){
+      digits=text.slice(markerIdx+marker.length).match(/[0-4]+/)?.[0]||'';
+      err.textContent='File read — embedded data found ('+digits.length+' digits)';
+    } else {
+      // Try converting symbols to digits
+      let t=text;
+      if(typeof customSets!=='undefined') customSets.forEach(set=>{set.forEach((s,i)=>{if(s)t=t.split(s).join(String(i));});});
+      Object.values(SHAPES).forEach(sym=>{sym.forEach((s,i)=>{if(s)t=t.split(s).join(String(i));});});
+      digits=t.replace(/[^0-4]/g,'');
+      err.textContent='File read — extracted '+digits.length+' digits';
+    }
+    
+    if(digits.length>0&&digits.length%12===0){
+      document.getElementById('decode-input').value=digits;
+      err.style.color='#1D9E75';
+      err.textContent+=' — hit Decode';
+      setTimeout(()=>{err.textContent='';err.style.color='#D85A30';},4000);
+    } else {
+      err.style.color='#D85A30';
+      err.textContent='Could not extract valid data — make sure this is a Quincunx encoded file';
+    }
+  };
+  reader.readAsText(file);
+}
+
 // ── QR CODE ──────────────────────────────────────────────────
 let qrInstance=null;
 
@@ -1004,6 +1087,5 @@ function clearQR(){
   qrInstance=null;
 }
 </script>
-
-
-</body></html>
+</body>
+</html>
