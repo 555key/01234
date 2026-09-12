@@ -930,22 +930,18 @@ function downloadPDF(){
   // Build a self-contained HTML page and convert to blob download
   const html=`<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
-<title>Quincunx Cipher — Encoded Output</title>
+<title></title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tibetan&display=swap" rel="stylesheet">
 <style>
   body{background:#000;color:#fff;padding:40px;font-family:Arial,sans-serif;margin:0;}
-  .header{font-size:10px;color:#333;margin-bottom:20px;letter-spacing:0.15em;text-transform:uppercase;}
   .output{font-size:18px;line-height:2.2;word-break:break-all;letter-spacing:1px;}
-  .footer{font-size:9px;color:#222;margin-top:30px;border-top:1px solid #111;padding-top:10px;}
-  .data{font-size:1px;color:#000;user-select:none;}
+  .data{font-size:1px;color:#000;user-select:none;position:absolute;top:-9999px;}
   @media print{
     body{background:#000!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
   }
 </style>
 </head><body>
-<div class="header">QUINCUNX CIPHER &mdash; ENCODED OUTPUT &mdash; MODE: ${outputMode.toUpperCase()} &mdash; quincunxcipher.com</div>
 <div class="output">${outputHTML}</div>
-<div class="footer">Decode with correct key only &bull; quincunxcipher.com</div>
 <div class="data">QUINCUNX_DATA:${digits}</div>
 </body></html>`;
 
