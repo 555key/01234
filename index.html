@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)file:///Users/lukewilliams/Downloads/geoC%20(1).html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geometric Cipher v2</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;background:#0a0a0a;color:#eee;padding:20px;}
+h1{font-size:20px;font-weight:500;color:#fff;margin-bottom:4px;}
+.subtitle{font-size:12px;color:#555;margin-bottom:20px;}
+.wrap{max-width:900px;margin:0 auto;}
+.section{margin-bottom:1rem;}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+label{font-size:13px;color:#888;}
+input[type=text],input[type=number],textarea{padding:7px 10px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#eee;font-size:13px;font-family:monospace;}
+textarea{resize:vertical;}
+button{padding:7px 14px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;}
+button.primary{background:#378ADD;color:#fff;border-color:#378ADD;font-weight:500;}
+button:hover{opacity:0.85;}
+.divider{border:none;border-top:1px solid #222;margin:0.8rem 0;}
+.err{color:#D85A30;font-size:12px;}
+.key-section{background:#111;border-radius:8px;padding:14px 16px;margin-bottom:1rem;border:1px solid #222;}
+.key-title{font-size:11px;font-weight:500;color:#555;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;}
+.info-box{background:#111;border:1px solid #1D9E7544;border-radius:8px;padding:10px 14px;margin-bottom:1rem;font-size:12px;color:#888;line-height:1.8;}
+.output-box{padding:10px 14px;background:#111;border-radius:6px;font-family:monospace;font-size:13px;color:#9B59B6;min-height:40px;word-break:break-all;line-height:2.2;border:1px solid #222;}
+.token{display:inline-block;padding:2px 5px;margin:2px;border-radius:4px;cursor:pointer;border:1.5px solid transparent;}
+.token.active{border-color:#9B59B6;background:rgba(155,89,182,0.12);}
+.toggle-row{display:flex;gap:6px;margin-bottom:10px;}
+.toggle-btn{padding:5px 12px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#666;font-size:12px;cursor:pointer;}
+.toggle-btn.active{background:#222;color:#eee;border-color:#555;}
+.cell-a{width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:16px;border-radius:2px;background:rgba(155,89,182,0.08);}
+.nav-row{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.nav-info{font-size:13px;color:#9B59B6;}
+.info{font-size:11px;color:#444;margin-top:6px;}
+canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-top:1rem;background:#0a0a0a;}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#666;}
+.leg-dot{width:10px;height:10px;border-radius:50%;}
+.result-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.result-card{flex:1;min-width:90px;padding:8px 10px;border-radius:6px;border:1px solid #222;background:#111;}
+.rc-label{font-size:10px;color:#555;margin-bottom:2px;}
+.rc-val{font-size:13px;font-weight:500;font-family:monospace;color:#eee;}
+.arrow{font-size:16px;color:#444;align-self:center;}
+.qr-section{background:#111;border-radius:8px;padding:14px 16px;margin-top:1rem;border:1px solid #222;}
+.qr-title{font-size:11px;font-weight:500;color:#555;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;}
+#qr-container{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-top:10px;}
+#qr-code{background:#fff;padding:12px;border-radius:8px;display:inline-block;}
+#qr-code canvas,#qr-code img{display:block;}
+.qr-info{font-size:12px;color:#666;margin-top:8px;line-height:1.7;}
+.qr-chars{font-size:13px;color:#9B59B6;font-weight:500;}
+.custom-section{background:#111;border:1px solid #222;border-radius:8px;padding:12px;margin-bottom:10px;display:none;}
+.custom-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;}
+.sym-input{width:42px;height:36px;text-align:center;font-size:20px;padding:2px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#eee;}
+.set-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;padding:6px;border-radius:6px;border:1px solid #222;}
+.set-label{font-size:11px;color:#555;min-width:50px;}
+.set-preview{font-size:16px;min-width:80px;color:#9B59B6;}
+.cb0{background:#CC0000;}
+.cb1{background:#1A5FA8;}
+.cb2{background:#E8C000;}
+.cb3{background:#ffffff;outline:1px solid #555;}
+.cb4{background:#111111;}
+</style>
+<script src="./index_files/qrcode.min.js"></script>
+<script src="./index_files/jsQR.min.js"></script>
+<link href="./index_files/css2" rel="stylesheet">
+</head>
+<body>
+<div class="wrap">
+<h1>Geometric Cipher System v2</h1>
+<p class="subtitle">3×3×3 Lattice · Output-Driven Cube Rotation · GF(5) Rotating Key</p>
+
+<div class="info-box">
+  <span style="color:#1D9E75;font-weight:500;">How it works:</span> After each character is encoded, the 12 output digits are summed and that sum (mod 27) determines how far the cube rotates for the next character. The same letter typed repeatedly produces completely different output each time because the output itself drives the next rotation — there is no fixed cycle.
+</div>
+
+<div class="key-section">
+  <div class="key-title">Key Configuration</div>
+  <div class="row" style="margin-bottom:10px;">
+    <button onclick="copyKey()" class="primary">🔑 Copy Key</button>
+    <button onclick="pasteKey()">📋 Paste Key</button>
+    <span class="err" id="key-err" style="color:#1D9E75;"></span>
+  </div>
+  <div class="row">
+    <label>Cube layout (27 letters + space):</label>
+    <button onclick="randomCube()">Randomise</button>
+    <button onclick="resetCube()">Reset</button>
+    <button onclick="applyCubeInput()">Apply</button>
+    <span class="err" id="cube-err"></span>
+  </div>
+  <textarea id="cube-display" rows="2" spellcheck="false" style="width:100%;letter-spacing:0.08em;" oninput="liveValidateCube()"></textarea>
+  <div id="cube-note" style="font-size:11px;color:#555;margin-top:3px;">Starting arrangement — updates as you step through encoded letters</div>
+  <hr class="divider">
+  <div class="row">
+    <label>GF(5) starting axes (permutation of 0–4):</label>
+    <input type="text" id="axis-input" value="01234" maxlength="5" style="width:80px">
+    <button onclick="applyAxes()">Apply</button>
+    <button onclick="randomAxes()">Randomise</button>
+    <button onclick="resetAxes()">Reset</button>
+    <span class="err" id="axis-err"></span>
+  </div>
+  <div class="row">
+    <label>GF(5) rotation step (1–4):</label>
+    <input type="number" id="step-input" value="1" min="1" max="4" style="width:55px">
+    <label style="margin-left:16px">Direction:</label>
+    <button id="dir-btn" onclick="toggleDirection()" style="min-width:130px">↻ Clockwise</button>
+  </div>
+  <div class="row">
+    <label>Current GF(5) axes:</label>
+    <div id="current-axes" style="font-family:monospace;font-size:13px;color:#eee;background:#1a1a1a;padding:4px 10px;border-radius:6px;border:1px solid #333;">[0 1 2 3 4]</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="section">
+  <div class="row">
+    <label>Message:</label>
+    <textarea id="msg-input" rows="2" placeholder="type a message..." style="width:300px;vertical-align:top;"></textarea>
+    <button class="primary" onclick="encodeMessage()" style="vertical-align:top;">Encode</button>
+    <button onclick="generateQR()" style="vertical-align:top;">QR Code ▦</button>
+  </div>
+  <div class="toggle-row">
+    <button class="toggle-btn active" id="btn-num" onclick="setOutputMode(&#39;numbers&#39;)">Numbers (0–4)</button>
+    <button class="toggle-btn" id="btn-col" onclick="setOutputMode(&#39;colours&#39;)">■ Colours</button>
+    <button class="toggle-btn" id="btn-dot" onclick="setOutputMode(&#39;dots&#39;)">·∶∴∷ Dots</button>
+    <button class="toggle-btn" id="btn-alc" onclick="setOutputMode(&#39;alchemical&#39;)">🜂 Elements</button>
+    <button class="toggle-btn" id="btn-chi" onclick="setOutputMode(&#39;chinese&#39;)">一 Chinese</button>
+    <button class="toggle-btn" id="btn-kan" onclick="setOutputMode(&#39;kanji&#39;)">ལམ ཁམ རམ</button>
+    <button class="toggle-btn" id="btn-cus" onclick="toggleCustomSection()">✏ Custom</button>
+  </div>
+  </div>
+
+  <div class="custom-section" id="custom-section">
+    <div style="font-size:11px;color:#555;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;">Custom Symbol Sets — enter any Unicode character in each box</div>
+    <div id="custom-sets-container"></div>
+    <div class="custom-row">
+      <button onclick="addCustomSet()">+ Add set</button>
+      <button onclick="applyCustom(false)" class="primary">Use single set</button>
+      <button onclick="applyCustom(true)">Mix all sets</button>
+      <span class="err" id="custom-err"></span>
+    </div>
+  </div>
+  <div style="font-size:12px;color:#555;margin-bottom:6px;">Click any token to trace — cube shows its rotated state at each letter:</div>
+  <div class="output-box" id="output-box"></div>
+  <div class="nav-row">
+    <button onclick="prevLetter()">← Prev</button>
+    <button onclick="nextLetter()">Next →</button>
+    <span class="nav-info" id="nav-info"></span>
+    <button onclick="autoPlay()" id="play-btn">▶ Auto</button>
+  </div>
+  <div class="info" id="info"></div>
+</div>
+
+<hr class="divider">
+
+<div class="section">
+  <div class="row"><label>Decode — paste encoded digits (with or without spaces between tokens):</label></div>
+  <div class="row">
+    <textarea id="decode-input" rows="2" placeholder="paste encoded digits here..." style="width:100%;"></textarea>
+  </div>
+  <div class="row">
+    <button class="primary" onclick="decodeMessage()">Decode</button>
+    <button onclick="document.getElementById(&#39;decode-input&#39;).value=&#39;&#39;;document.getElementById(&#39;decode-output&#39;).textContent=&#39;&#39;;">Clear</button>
+    <label for="qr-upload" style="padding:7px 14px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;">📷 Upload QR Image</label>
+    <input type="file" id="qr-upload" accept="image/*" style="display:none;" onchange="readQRFromImage(this)">
+    <span class="err" id="decode-err"></span>
+  </div>
+  <canvas id="qr-read-canvas" style="display:none;"></canvas>
+  <div class="output-box" id="decode-output" style="color:#1D9E75;min-height:36px;"></div>
+</div>
+
+<div class="qr-section" id="qr-section" style="display:none;">
+  <div class="qr-title">QR Code</div>
+  <div class="row">
+    <button class="primary" onclick="generateQR()">Generate QR from encoded output</button>
+    <button onclick="clearQR()">Clear</button>
+    <span id="qr-err" class="err"></span>
+  </div>
+  <div id="qr-container">
+    <div id="qr-code"></div>
+    <div>
+      <div class="qr-info" id="qr-info"></div>
+      <div style="margin-top:10px;font-size:11px;color:#444;">
+        Scan with any QR reader to get the encoded digit string.<br>
+        Recipient pastes it into the Decode box with the same key.
+      </div>
+    </div>
+  </div>
+</div>
+
+<canvas id="cv" height="560" width="860"></canvas>
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Blue planes 0–2</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#D85A30"></div>Orange planes 3–5</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#1D9E75"></div>Green planes 6–8</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#9B59B6"></div>Active character</div>
+</div>
+<div class="result-row" id="result-row"></div>
+
+
+<script>
+const DEFAULT_LAYOUT='abcdefghijklmnopqrstuvwxyz '.split('');
+const C={blue:'#378ADD',orange:'#D85A30',green:'#1D9E75',purple:'#9B59B6'};
+const BG='#0a0a0a',TEXT='#ffffff',MUTED='#555555',DOTFILL='#1a1a1a';
+
+let outputMode='numbers';
+let colourShape='square';
+let kanjiColoured=false;
+const SHAPES={
+  square:['🔴','🔵','🟡','⚪','⚫'],
+  circle:['🔴','🔵','🟡','⚪','⚫'],
+  diamond:['🔶','🔷','💛','🤍','🖤'],
+  heart:['❤️','💙','💛','🤍','🖤'],
+  kanji:['ལམ','ཁམ','རམ','ཡམ','བམ'],
+  alchemical:['🜂','🜄','🜁','🜃','〇'],
+  chinese:['〇','一','二','三','四'],
+  dots:['⠀','·','∶','∴','∷']
+};
+let cubeLayout=[...DEFAULT_LAYOUT];
+let startAxes=[0,1,2,3,4];
+let rotStep=1,rotDir=1;
+let encoded=[],currentIdx=-1,playTimer=null;
+
+// ── CUBE ─────────────────────────────────────────────────────
+function buildCube(lay){
+  const cube={},rev={};let idx=0;
+  for(let iy=0;iy<3;iy++)for(let iz=0;iz<3;iz++)for(let ix=0;ix<3;ix++){
+    const ch=lay[idx],b=iy,o=ix+3,g=iz+6;
+    cube[ch]=[b,o,g];rev[b+','+o+','+g]=ch;idx++;
+  }
+  return{cube,rev};
+}
+
+// ── ROTATION ─────────────────────────────────────────────────
+// Cube rotates by sum of output digits mod 27 (never 0)
+function cubeRotAmount(digits){
+  const s=digits.reduce((a,b)=>a+b,0);
+  const r=s%27;
+  return r===0?1:r;
+}
+function rotateCube(lay,amount){
+  const r=((amount%27)+27)%27||1;
+  return [...lay.slice(r),...lay.slice(0,r)];
+}
+function rotateAxes(ax,step,dir){
+  return ax.map((_,i)=>ax[((i+step*dir)%5+5)%5]);
+}
+
+// ── LAYER 2 & GF5 ────────────────────────────────────────────
+function digitToAxes(n){return[n%3,3+Math.floor(n/3)];}
+function pointToGF5(p,ax){return[ax[p%3],ax[3+Math.floor(p/3)]];}
+function gf5ToPoint(ga,gb,ax){
+  const vi=ax.indexOf(ga),hi=ax.indexOf(gb);
+  if(vi<0||vi>2||hi<3||hi>4)throw new Error('Bad GF5 pair '+ga+','+gb);
+  return vi+(hi-3)*3;
+}
+
+// ── ENCODE ───────────────────────────────────────────────────
+function encodeAll(msg,layout,axes,step,dir){
+  const result=[];
+  let lay=[...layout],ax=[...axes];
+  for(const ch of msg.toLowerCase()){
+    const{cube}=buildCube(lay);
+    if(!(ch in cube)){
+      result.push({ch,skip:true,token:'['+ch+']',axes:[...ax],layout:[...lay],pos:0,rot:0,dsum:0});
+      continue;
+    }
+    const pos=lay.indexOf(ch);
+    const[b,o,g]=cube[ch];
+    const digits=[];
+    for(const n of[b,o,g]){
+      const[vi,hi]=digitToAxes(n);
+      const[g1,g2]=pointToGF5(vi,ax);
+      const[g3,g4]=pointToGF5(hi,ax);
+      digits.push(g1,g2,g3,g4);
+    }
+    // rotation driven by sum of output digits mod 27
+    const dsum=digits.reduce((a,b)=>a+b,0);
+    const rot=dsum%27||1;
+    result.push({ch,skip:false,token:digits.join(''),digits,planes:[b,o,g],
+                 axes:[...ax],layout:[...lay],pos,rot,dsum});
+    lay=rotateCube(lay,rot);
+    ax=rotateAxes(ax,step,dir);
+  }
+  return result;
+}
+
+// ── DECODE ───────────────────────────────────────────────────
+function decodeAll(str,layout,axes,step,dir){
+  let lay=[...layout],ax=[...axes];
+  // Convert custom symbols to digits first (if any defined)
+  if(typeof customSets!=='undefined'&&customSets.length>0){
+    customSets.forEach(set=>{
+      set.forEach((s,i)=>{if(s)str=str.split(s).join(String(i));});
+    });
+  }
+  // Convert known symbol sets to digits
+  str=str.split('🜂').join('0').split('🜄').join('1').split('🜁').join('2').split('🜃').join('3').split('〇').join('4').split('○').join('4');
+  Object.values(SHAPES).forEach(sym=>{
+    sym.forEach((s,i)=>{str=str.split(s).join(String(i));});
+  });
+  // Strip whitespace then remove any non-digit characters (leftover text after symbol conversion)
+  const stripped=str.replace(/\s+/g,'').replace(/[^0-4]/g,'');
+  let tokens;
+  if(stripped.length%12===0&&stripped.length>0){
+    tokens=[];
+    for(let i=0;i<stripped.length;i+=12) tokens.push(stripped.slice(i,i+12));
+  } else {
+    tokens=[];
+    for(let i=0;i<stripped.length;i+=12) tokens.push(stripped.slice(i,i+12));
+  }
+  let result='';
+  const err=document.getElementById('decode-err');
+  err.textContent='';
+  for(const token of tokens){
+    if(token.startsWith('[')&&token.endsWith(']')){result+=token.slice(1,-1);continue;}
+    if(token.length!==12||!/^\d+$/.test(token)){
+      err.textContent='Invalid token: '+token+' (need 12 digits)';result+='?';continue;
+    }
+    try{
+      const{rev}=buildCube(lay);
+      const d=token.split('').map(Number);
+      const planes=[];
+      for(let i=0;i<3;i++){
+        const p0=gf5ToPoint(d[i*4],d[i*4+1],ax);
+        const p1=gf5ToPoint(d[i*4+2],d[i*4+3],ax);
+        planes.push(p0+(p1-3)*3);
+      }
+      const key=planes.join(',');
+      if(!(key in rev))throw new Error('Unknown plane combo '+key);
+      const ch=rev[key];
+      // same rotation calculation
+      const dsum=d.reduce((a,b)=>a+b,0);
+      const rot=dsum%27||1;
+      result+=ch;
+      lay=rotateCube(lay,rot);
+      ax=rotateAxes(ax,step,dir);
+    }catch(e){err.textContent='Decode error: '+e.message;result+='?';}
+  }
+  return result;
+}
+
+// ── KEY UI ───────────────────────────────────────────────────
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function randomCube(){cubeLayout=shuffle([...DEFAULT_LAYOUT]);renderCubeDisplay();if(encoded.length)reEncode();redraw();}
+function resetCube(){cubeLayout=[...DEFAULT_LAYOUT];renderCubeDisplay();if(encoded.length)reEncode();redraw();}
+function renderCubeDisplay(lay){
+  document.getElementById('cube-display').value=(lay||cubeLayout).map(c=>c===' '?'_':c).join('');
+  document.getElementById('cube-err').textContent='';
+}
+function applyCubeInput(){
+  const val=[...document.getElementById('cube-display').value.replace(/_/g,' ')];
+  const err=document.getElementById('cube-err');
+  if(val.length!==27){err.textContent='Need 27 characters, got '+val.length;return;}
+  if(new Set(val).size!==27){err.textContent='All 27 must be unique';return;}
+  const valid='abcdefghijklmnopqrstuvwxyz '.split('');
+  for(const c of val){if(!valid.includes(c)){err.textContent='Only a-z and space allowed';return;}}
+  err.textContent='';cubeLayout=val;renderCubeDisplay();if(encoded.length)reEncode();redraw();
+}
+function liveValidateCube(){
+  const n=[...document.getElementById('cube-display').value].length;
+  document.getElementById('cube-err').textContent=n!==27?'Need 27 chars, currently '+n:'';
+}
+function applyAxes(){
+  const val=document.getElementById('axis-input').value.trim();
+  const err=document.getElementById('axis-err');
+  if(!/^[01234]{5}$/.test(val)||new Set(val).size!==5){err.textContent='Must be all 5 of 0-4';return;}
+  err.textContent='';startAxes=val.split('').map(Number);
+  document.getElementById('current-axes').textContent='['+startAxes.join(' ')+']';
+  if(encoded.length)reEncode();redraw();
+}
+function randomAxes(){
+  const a=shuffle([0,1,2,3,4]);startAxes=[...a];
+  document.getElementById('axis-input').value=a.join('');
+  document.getElementById('axis-err').textContent='';
+  document.getElementById('current-axes').textContent='['+startAxes.join(' ')+']';
+  if(encoded.length)reEncode();redraw();
+}
+function resetAxes(){
+  startAxes=[0,1,2,3,4];
+  document.getElementById('axis-input').value='01234';
+  document.getElementById('axis-err').textContent='';
+  document.getElementById('current-axes').textContent='['+startAxes.join(' ')+']';
+  if(encoded.length)reEncode();redraw();
+}
+function toggleDirection(){
+  rotDir=rotDir===1?-1:1;
+  document.getElementById('dir-btn').textContent=rotDir===1?'↻ Clockwise':'↺ Anticlockwise';
+  if(encoded.length)reEncode();redraw();
+}
+
+function setOutputMode(m){
+  outputMode=m;
+  if(m==='custom'){
+    document.getElementById('output-box').innerHTML='<span style="color:#555;font-size:13px;">Define symbols using ✏ Custom above then click Use single set or Mix all sets</span>';
+  }
+  document.getElementById('btn-num').className='toggle-btn'+(m==='numbers'?' active':'');
+  const bc=document.getElementById('btn-col');if(bc)bc.className='toggle-btn'+(m==='colours'?' active':'');
+  const bcus=document.getElementById('btn-cus');if(bcus)bcus.className='toggle-btn'+(m==='custom'?' active':'');
+
+  const bk=document.getElementById('btn-kan');if(bk)bk.className='toggle-btn'+(m==='kanji'?' active':'');
+  const ba=document.getElementById('btn-alc');if(ba)ba.className='toggle-btn'+(m==='alchemical'?' active':'');
+  const bch=document.getElementById('btn-chi');if(bch)bch.className='toggle-btn'+(m==='chinese'?' active':'');
+  const bdo=document.getElementById('btn-dot');if(bdo)bdo.className='toggle-btn'+(m==='dots'?' active':'');
+  renderOutput();
+}
+
+// ── KEY EXPORT/IMPORT ────────────────────────────────────────
+function copyKey(){
+  const key={
+    version:2,
+    layout:cubeLayout.join(''),
+    axes:startAxes,
+    step:rotStep,
+    direction:rotDir,
+    customSets:customSets,
+    outputMode:outputMode
+  };
+  const str=JSON.stringify(key);
+  const err=document.getElementById('key-err');
+  const copyDone=(msg)=>{
+    err.style.color='#1D9E75';
+    err.textContent=msg+' (layout + axes + step + '+(customSets.length>0?customSets.length+' custom sets':'no custom sets')+')';
+    setTimeout(()=>err.textContent='',4000);
+  };
+  navigator.clipboard.writeText(str).then(()=>copyDone('Key copied!')).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=str;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    copyDone('Key copied!');
+  });
+}
+
+function pasteKey(){
+  const input=prompt('Paste key here:');
+  if(!input)return;
+  try{
+    const key=JSON.parse(input.trim());
+    if(!key.layout||!key.axes||key.version!==2)throw new Error('Invalid key format');
+    // Apply layout
+    cubeLayout=[...key.layout];
+    renderCubeDisplay();
+    // Apply axes
+    startAxes=[...key.axes];
+    document.getElementById('axis-input').value=key.axes.join('');
+    document.getElementById('current-axes').textContent='['+key.axes.join(' ')+']';
+    // Apply step and direction
+    rotStep=key.step||1;
+    rotDir=key.direction||1;
+    document.getElementById('step-input').value=rotStep;
+    document.getElementById('dir-btn').textContent=rotDir===1?'↻ Clockwise':'↺ Anticlockwise';
+    // Apply custom sets
+    if(key.customSets&&key.customSets.length>0){
+      customSets=key.customSets;
+      renderCustomSets();
+      // Show custom section
+      document.getElementById('custom-section').style.display='block';
+      document.getElementById('btn-cus').className='toggle-btn active';
+    }
+    // Re-encode if message exists
+    if(encoded.length)reEncode();
+    redraw();
+    const err=document.getElementById('key-err');
+    err.style.color='#1D9E75';
+    err.textContent='Key applied successfully!';
+    setTimeout(()=>err.textContent='',3000);
+  }catch(e){
+    const err=document.getElementById('key-err');
+    err.style.color='#D85A30';
+    err.textContent='Invalid key: '+e.message;
+  }
+}
+
+// ── CUSTOM SYMBOLS ───────────────────────────────────────────
+let customSets=[];
+let customMix=false;
+
+function toggleCustomSection(){
+  const sec=document.getElementById('custom-section');
+  const btn=document.getElementById('btn-cus');
+  const showing=sec.style.display==='block';
+  sec.style.display=showing?'none':'block';
+  btn.className='toggle-btn'+(showing?'':' active');
+  if(!showing&&customSets.length===0) addCustomSet();
+}
+
+function addCustomSet(){
+  const idx=customSets.length;
+  customSets.push(['','','','','']);
+  renderCustomSets();
+}
+
+function removeCustomSet(idx){
+  customSets.splice(idx,1);
+  renderCustomSets();
+}
+
+function renderCustomSets(){
+  const container=document.getElementById('custom-sets-container');
+  container.innerHTML=customSets.map((set,i)=>{
+    const inputs=set.map((ch,j)=>
+      `<input class="sym-input" maxlength="2" value="${ch}" 
+        onchange="customSets[${i}][${j}]=this.value.trim().slice(-1);updateCustomPreview(${i})"
+        oninput="customSets[${i}][${j}]=this.value.trim().slice(-1);updateCustomPreview(${i})"
+        title="Symbol for ${j}" placeholder="${j}"/>`
+    ).join('');
+    const preview=set.map(c=>c||'?').join('');
+    return `<div class="set-row" id="set-row-${i}">
+      <span class="set-label">Set ${i+1}</span>
+      ${inputs}
+      <span class="set-preview" id="preview-${i}">${preview}</span>
+      <button onclick="removeCustomSet(${i})" style="font-size:11px;padding:3px 8px;">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function updateCustomPreview(i){
+  const el=document.getElementById('preview-'+i);
+  if(el)el.textContent=customSets[i].map(c=>c||'?').join('');
+}
+
+function applyCustom(mix){
+  const err=document.getElementById('custom-err');
+  if(customSets.length===0){err.textContent='Add at least one set';return;}
+  for(let i=0;i<customSets.length;i++){
+    if(customSets[i].some(c=>!c)){err.textContent='Set '+(i+1)+' has empty symbols';return;}
+  }
+  err.textContent='';
+  customMix=mix;
+  setOutputMode('custom');
+}
+
+function encodeMessage(){
+  rotStep=Math.max(1,Math.min(4,parseInt(document.getElementById('step-input').value)||1));
+  const msg=document.getElementById('msg-input').value;
+  if(!msg)return;
+  encoded=encodeAll(msg,cubeLayout,startAxes,rotStep,rotDir);
+  currentIdx=-1;
+  renderCubeDisplay();
+  document.getElementById('cube-note').textContent='Starting arrangement — step through to see rotation';
+  document.getElementById('cube-note').style.color='#555';
+  renderOutput();
+  selectLetter(0);
+}
+function reEncode(){
+  if(!encoded.length)return;
+  const msg=encoded.map(e=>e.ch).join('');
+  rotStep=Math.max(1,Math.min(4,parseInt(document.getElementById('step-input').value)||1));
+  encoded=encodeAll(msg,cubeLayout,startAxes,rotStep,rotDir);
+  renderOutput();if(currentIdx>=0)selectLetter(currentIdx);
+}
+function decodeMessage(){
+  document.getElementById('decode-output').textContent=
+    decodeAll(document.getElementById('decode-input').value,cubeLayout,startAxes,rotStep,rotDir);
+}
+
+function renderOutput(){
+  const box=document.getElementById('output-box');
+  if(outputMode==='colours'){
+    // One continuous string of colour squares — no separators
+    const CSYM=SHAPES[colourShape]||SHAPES.square;
+    const allColours=encoded.filter(e=>!e.skip).map(e=>(e.digits||[]).map(d=>CSYM[d]).join('')).join('');
+    box.innerHTML='<span style="font-size:14px;line-height:1.4;word-break:break-all;letter-spacing:0;user-select:all;cursor:text;">'+allColours+'</span>';
+  } else if(outputMode==='chinese'){
+    const CSYM2=SHAPES.chinese;
+    const allChinese=encoded.filter(e=>!e.skip).map(e=>
+      (e.digits||[]).map(d=>CSYM2[d]).join('')
+    ).join('');
+    box.innerHTML='<span style="font-size:20px;line-height:1.6;word-break:break-all;letter-spacing:2px;user-select:all;cursor:text;color:#000000;background:#ffffff;padding:8px;display:block;border-radius:6px;">'+allChinese+'</span>';
+  } else if(outputMode==='dots'){
+    const DSYM2=SHAPES.dots;
+    const allDots=encoded.filter(e=>!e.skip).map(e=>
+      (e.digits||[]).map(d=>DSYM2[d]).join('')
+    ).join('');
+    box.innerHTML='<span style="font-size:22px;line-height:1.6;word-break:break-all;letter-spacing:3px;user-select:all;cursor:text;color:#000000;background:#ffffff;padding:8px;display:block;border-radius:6px;">'+allDots+'</span>';
+  } else if(outputMode==='alchemical'){
+    const ASYM=SHAPES.alchemical;
+    const ACOL=['#CC0000','#1A5FA8','#E8C000','#888888','#111111'];
+    const allAlch=encoded.filter(e=>!e.skip).map(e=>
+      (e.digits||[]).map(d=>'<span style="color:'+ACOL[d]+';font-size:16px;">'+ASYM[d]+'</span>').join('')
+    ).join('');
+    box.innerHTML='<span style="font-size:16px;line-height:1.4;word-break:break-all;letter-spacing:1px;user-select:all;cursor:text;">'+allAlch+'</span>';
+  } else if(outputMode==='custom'){
+    box.innerHTML='<span style="color:#555;font-size:13px;">Define symbols using ✏ Custom above then click Use single set or Mix all sets</span>';
+    if(customSets.length===0||customSets.every(s=>s.every(c=>!c))) return;
+    let dp3=0;
+    let chtml='';
+    encoded.filter(e=>!e.skip).forEach(e=>{
+      (e.digits||[]).forEach(d=>{
+        const setIdx=customMix?(dp3%customSets.length):0;
+        const sym=customSets[setIdx][d]||'?';
+        chtml+='<span style="font-size:20px;">'+sym+'</span>';
+        dp3++;
+      });
+    });
+    box.innerHTML='<div style="line-height:1.8;word-break:break-all;letter-spacing:2px;user-select:all;cursor:text;padding:4px;">'+chtml+'</div>';
+  } else if(outputMode==='kanji'){
+    const KCOL=kanjiColoured?['#CC0000','#1A5FA8','#E8C000','#888888','#111111']:['inherit','inherit','inherit','inherit','inherit'];
+    const KSYM=SHAPES.kanji;
+    const allKanji=encoded.filter(e=>!e.skip).map(e=>
+      (e.digits||[]).map(d=>'<span style="color:'+KCOL[d]+';font-size:16px;">'+KSYM[d]+'</span>').join('')
+    ).join('');
+    box.innerHTML='<span style="line-height:1.8;word-break:break-all;letter-spacing:2px;user-select:all;cursor:text;font-family:\'Noto Serif Tibetan\',serif;font-size:18px;color:#000000;background:#ffffff;padding:8px;display:block;border-radius:6px;">'+allKanji+'</span>';
+  } else {
+    box.innerHTML=encoded.map((e,i)=>{
+      const cls='token'+(i===currentIdx?' active':'');
+      const col=e.skip?MUTED:C.purple;
+      return '<span class="'+cls+'" style="color:'+col+'" data-idx="'+i+'">'+e.token+'</span>';
+    }).join(' ');
+  }
+  const n=encoded.filter(e=>!e.skip).length;
+  document.getElementById('info').textContent=n?n+' characters · '+n*12+' GF(5) digits total':'';
+}
+
+document.addEventListener('click',function(ev){
+  const el=ev.target.closest('[data-idx]');
+  if(el)selectLetter(parseInt(el.getAttribute('data-idx')));
+});
+
+function selectLetter(i){
+  if(i<0||i>=encoded.length)return;
+  currentIdx=i;renderOutput();
+  const e=encoded[i];
+  const ch=e.ch===' '?'space':e.ch;
+  document.getElementById('nav-info').textContent=
+    'Letter '+(i+1)+' of '+encoded.length+': \''+ch+
+    '\' — digit sum '+e.dsum+' → rotates by '+e.rot;
+  document.getElementById('current-axes').textContent='['+e.axes.join(' ')+']';
+  renderCubeDisplay(e.layout);
+  document.getElementById('cube-note').style.color='#9B59B6';
+  document.getElementById('cube-note').textContent=
+    'Cube at letter '+(i+1)+' — output digits sum to '+e.dsum+', cube rotates by '+e.rot+' after encoding';
+  drawTrace(e.skip?null:e);
+}
+function prevLetter(){if(currentIdx>0)selectLetter(currentIdx-1);}
+function nextLetter(){if(currentIdx<encoded.length-1)selectLetter(currentIdx+1);}
+function autoPlay(){
+  if(playTimer){clearInterval(playTimer);playTimer=null;document.getElementById('play-btn').textContent='▶ Auto';return;}
+  document.getElementById('play-btn').textContent='⏸ Pause';
+  playTimer=setInterval(()=>{
+    if(currentIdx>=encoded.length-1){clearInterval(playTimer);playTimer=null;document.getElementById('play-btn').textContent='▶ Auto';return;}
+    nextLetter();
+  },1200);
+}
+function redraw(){
+  const lay=currentIdx>=0&&encoded[currentIdx]?encoded[currentIdx].layout:cubeLayout;
+  const ax=currentIdx>=0&&encoded[currentIdx]?encoded[currentIdx].axes:startAxes;
+  if(currentIdx>=0&&encoded[currentIdx]&&!encoded[currentIdx].skip)drawTrace(encoded[currentIdx]);
+  else drawBase(cubePoints(lay),[...ax]);
+}
+
+// ── CANVAS ───────────────────────────────────────────────────
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const W=860,H=560;cv.width=W;cv.height=H;
+const CX=240,CY=290,DX=62,DY=78;
+
+function proj(ix,iy,iz){return[CX+(ix-iz)*DX,CY-(ix+iz)*DX*0.4+iy*DY];}
+function cubePoints(lay){
+  const l=lay||cubeLayout;
+  const pts=[];let idx=0;
+  for(let iy=0;iy<3;iy++)for(let iz=0;iz<3;iz++)for(let ix=0;ix<3;ix++){
+    const[sx,sy]=proj(ix,iy,iz);
+    pts.push({ix,iy,iz,sx,sy,label:l[idx]});idx++;
+  }
+  return pts;
+}
+function gp(pts,ix,iy,iz){return pts.find(p=>p.ix===ix&&p.iy===iy&&p.iz===iz);}
+
+function dpln(cs,fill,stroke){
+  ctx.beginPath();ctx.moveTo(cs[0].sx,cs[0].sy);
+  cs.slice(1).forEach(c=>ctx.lineTo(c.sx,c.sy));
+  ctx.closePath();ctx.fillStyle=fill;ctx.fill();
+  ctx.strokeStyle=stroke;ctx.lineWidth=0.8;ctx.stroke();
+}
+function dline(p1,p2,col,alpha){
+  const dx=p2.sx-p1.sx,dy=p2.sy-p1.sy,len=Math.sqrt(dx*dx+dy*dy);if(!len)return;
+  const ux=dx/len,uy=dy/len;
+  ctx.beginPath();ctx.moveTo(p1.sx-ux*14,p1.sy-uy*14);ctx.lineTo(p2.sx+ux*14,p2.sy+uy*14);
+  ctx.strokeStyle=col;ctx.lineWidth=0.7;ctx.globalAlpha=alpha||0.35;ctx.stroke();ctx.globalAlpha=1;
+}
+function ddot(x,y,r,fill,stroke,lbl,lc,bold){
+  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();
+  if(lbl!==undefined&&lbl!==null){
+    ctx.fillStyle=lc||TEXT;ctx.font=(bold?'bold ':'')+''+(r>6?9:7)+'px Arial';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(String(lbl)===' '?'_':String(lbl),x,y);
+  }
+}
+function dtxt(x,y,t,col,size,align){
+  ctx.fillStyle=col||TEXT;ctx.font=(size||11)+'px Arial';
+  ctx.textAlign=align||'center';ctx.textBaseline='middle';ctx.fillText(String(t),x,y);
+}
+function darrow(x1,y1,x2,y2,col,curve){
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);if(len<8)return;
+  const ux=dx/len,uy=dy/len;
+  ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.globalAlpha=0.82;ctx.setLineDash([]);
+  if(curve){
+    const cpx=x1+dx*0.5-uy*len*curve,cpy=y1+dy*0.5+ux*len*curve;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(cpx,cpy,x2,y2);ctx.stroke();
+    const tx=cpx+(x2-cpx)*0.85,ty=cpy+(y2-cpy)*0.85;
+    const adx=x2-tx,ady=y2-ty,al=Math.sqrt(adx*adx+ady*ady)||1;
+    const aux=adx/al,auy=ady/al;
+    ctx.beginPath();ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-aux*8+auy*4,y2-auy*8-aux*4);
+    ctx.lineTo(x2-aux*8-auy*4,y2-auy*8+aux*4);
+    ctx.closePath();ctx.fillStyle=col;ctx.fill();
+  } else {
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-ux*8+uy*4,y2-uy*8-ux*4);
+    ctx.lineTo(x2-ux*8-uy*4,y2-uy*8+ux*4);
+    ctx.closePath();ctx.fillStyle=col;ctx.fill();
+  }
+  ctx.globalAlpha=1;
+}
+
+const G3X=[630,695,760],G3Y=[80,155,230];
+const G6X=[630,695,760],G6Y=[360,435];
+const numCols=[C.blue,C.blue,C.blue,C.orange,C.orange,C.orange,C.green,C.green,C.green];
+
+function drawBase(pts,axes){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);
+  dtxt(CX,14,'Layer 1 — 3×3×3 Cube',MUTED,12,'center');
+  dtxt(695,14,'Layer 2 — 3×3 Grid',MUTED,12,'center');
+  dtxt(695,330,'Layer 3 — GF(5)',MUTED,12,'center');
+
+  for(let iy=0;iy<3;iy++){
+    dpln([gp(pts,0,iy,0),gp(pts,2,iy,0),gp(pts,2,iy,2),gp(pts,0,iy,2)],'rgba(55,138,221,0.08)','rgba(55,138,221,0.22)');
+    const lp=gp(pts,0,iy,2);dtxt(lp.sx-14,lp.sy,iy,C.blue,10,'right');
+  }
+  for(let ix=0;ix<3;ix++){
+    dpln([gp(pts,ix,0,0),gp(pts,ix,0,2),gp(pts,ix,2,2),gp(pts,ix,2,0)],'rgba(216,90,48,0.06)','rgba(216,90,48,0.20)');
+    const lp=gp(pts,ix,0,2);dtxt(lp.sx-14,lp.sy+16,ix+3,C.orange,10,'right');
+  }
+  for(let iz=0;iz<3;iz++){
+    dpln([gp(pts,0,0,iz),gp(pts,2,0,iz),gp(pts,2,2,iz),gp(pts,0,2,iz)],'rgba(29,158,117,0.06)','rgba(29,158,117,0.20)');
+    const lp1=gp(pts,0,0,iz),lp2=gp(pts,2,0,iz);
+    dtxt((lp1.sx+lp2.sx)/2,(lp1.sy+lp2.sy)/2+18,iz+6,C.green,10,'center');
+  }
+  for(let iy=0;iy<3;iy++)for(let iz=0;iz<3;iz++)dline(gp(pts,0,iy,iz),gp(pts,2,iy,iz),C.blue);
+  for(let ix=0;ix<3;ix++)for(let iz=0;iz<3;iz++)dline(gp(pts,ix,0,iz),gp(pts,ix,2,iz),C.green);
+  for(let ix=0;ix<3;ix++)for(let iy=0;iy<3;iy++)dline(gp(pts,ix,iy,0),gp(pts,ix,iy,2),C.orange);
+  [...pts].sort((a,b)=>a.sy-b.sy).forEach(p=>ddot(p.sx,p.sy,9,DOTFILL,MUTED,p.label,TEXT,false));
+
+  for(let i=0;i<3;i++){
+    ctx.beginPath();ctx.moveTo(G3X[i],G3Y[0]-18);ctx.lineTo(G3X[i],G3Y[2]+18);
+    ctx.strokeStyle=MUTED;ctx.lineWidth=1;ctx.globalAlpha=0.5;ctx.stroke();ctx.globalAlpha=1;
+    dtxt(G3X[i],G3Y[0]-30,i,TEXT,12,'center');
+  }
+  for(let j=0;j<3;j++){
+    ctx.beginPath();ctx.moveTo(G3X[0]-18,G3Y[j]);ctx.lineTo(G3X[2]+18,G3Y[j]);
+    ctx.strokeStyle=MUTED;ctx.lineWidth=1;ctx.globalAlpha=0.5;ctx.stroke();ctx.globalAlpha=1;
+    dtxt(G3X[2]+32,G3Y[j],j+3,TEXT,12,'center');
+  }
+  for(let n=0;n<9;n++){const j=Math.floor(n/3),i=n%3;ddot(G3X[i],G3Y[j],13,DOTFILL,numCols[n],n,numCols[n],true);}
+
+  for(let i=0;i<3;i++){
+    ctx.beginPath();ctx.moveTo(G6X[i],G6Y[0]-18);ctx.lineTo(G6X[i],G6Y[1]+18);
+    ctx.strokeStyle=MUTED;ctx.lineWidth=1;ctx.globalAlpha=0.5;ctx.stroke();ctx.globalAlpha=1;
+    dtxt(G6X[i],G6Y[0]-30,axes[i],TEXT,12,'center');
+  }
+  for(let j=0;j<2;j++){
+    ctx.beginPath();ctx.moveTo(G6X[0]-18,G6Y[j]);ctx.lineTo(G6X[2]+18,G6Y[j]);
+    ctx.strokeStyle=MUTED;ctx.lineWidth=1;ctx.globalAlpha=0.5;ctx.stroke();ctx.globalAlpha=1;
+    dtxt(G6X[2]+32,G6Y[j],axes[3+j],TEXT,12,'center');
+  }
+  for(let p=0;p<6;p++){const i=p%3,j=Math.floor(p/3);ddot(G6X[i],G6Y[j],13,DOTFILL,MUTED,p,MUTED,false);}
+  dtxt(10,548,'Axes:['+axes.join(' ')+']  Step:'+rotStep+'  Dir:'+(rotDir===1?'CW':'CCW'),MUTED,9,'left');
+}
+
+function drawTrace(e){
+  const lay=e&&e.layout?[...e.layout]:cubeLayout;
+  const axes=e?[...e.axes]:[...startAxes];
+  const pts=cubePoints(lay);
+  drawBase(pts,axes);
+  if(!e||!e.planes){document.getElementById('result-row').innerHTML='';return;}
+
+  const[b,o,g]=e.planes;
+  const dc=[C.blue,C.orange,C.green];
+
+  dpln([gp(pts,0,b,0),gp(pts,2,b,0),gp(pts,2,b,2),gp(pts,0,b,2)],'rgba(55,138,221,0.30)','rgba(55,138,221,0.9)');
+  dpln([gp(pts,o-3,0,0),gp(pts,o-3,0,2),gp(pts,o-3,2,2),gp(pts,o-3,2,0)],'rgba(216,90,48,0.26)','rgba(216,90,48,0.9)');
+  dpln([gp(pts,0,0,g-6),gp(pts,2,0,g-6),gp(pts,2,2,g-6),gp(pts,0,2,g-6)],'rgba(29,158,117,0.26)','rgba(29,158,117,0.9)');
+
+  const ap=gp(pts,o-3,b,g-6);
+  ctx.beginPath();ctx.arc(ap.sx,ap.sy,16,0,Math.PI*2);ctx.fillStyle='rgba(155,89,182,0.20)';ctx.fill();
+  ddot(ap.sx,ap.sy,10,C.purple,C.purple,e.ch===' '?'_':e.ch,TEXT,true);
+  [...pts].sort((a,bb)=>a.sy-bb.sy).forEach(p=>{
+    if(!(p.ix===o-3&&p.iy===b&&p.iz===g-6))ddot(p.sx,p.sy,9,DOTFILL,MUTED,p.label,TEXT,false);
+  });
+
+  for(let d=0;d<3;d++){
+    const n=[b,o,g][d],j=Math.floor(n/3),i=n%3;
+    ctx.beginPath();ctx.arc(G3X[i],G3Y[j],17,0,Math.PI*2);ctx.fillStyle=dc[d]+'28';ctx.fill();
+    ddot(G3X[i],G3Y[j],13,dc[d],dc[d],n,TEXT,true);
+    darrow(ap.sx+(d-1)*12,ap.sy,G3X[i]-14,G3Y[j],dc[d],[-.15,0,.15][d]);
+  }
+
+  const pHighlights=[];
+  for(let d=0;d<3;d++){
+    const n=[b,o,g][d],[vi,hi]=digitToAxes(n);
+    pHighlights.push({p:vi,col:dc[d]});pHighlights.push({p:hi,col:dc[d]});
+  }
+  for(const{p,col}of pHighlights){
+    const i=p%3,j=Math.floor(p/3);
+    ctx.beginPath();ctx.arc(G6X[i],G6Y[j],19,0,Math.PI*2);ctx.fillStyle=col+'20';ctx.fill();
+    ddot(G6X[i],G6Y[j],13,col,col,p,TEXT,true);
+  }
+
+  const vCurves=[-0.22,0.0,0.22];
+  const hCurves=[0.18,-0.18,0.0];
+  for(let d=0;d<3;d++){
+    const n=[b,o,g][d],[vi,hi]=digitToAxes(n);
+    darrow(G3X[vi],G3Y[0]-30,G6X[vi%3],G6Y[Math.floor(vi/3)]-15,dc[d],vCurves[d]);
+    darrow(G3X[2]+32,G3Y[hi-3],G6X[(hi-3)%3]+15,G6Y[hi>=6?1:0],dc[d],hCurves[d]);
+  }
+
+  for(let i=0;i<3;i++)dtxt(G6X[i],G6Y[0]-30,axes[i],TEXT,13,'center');
+  for(let j=0;j<2;j++)dtxt(G6X[2]+32,G6Y[j],axes[3+j],TEXT,13,'center');
+
+  const gf5res=[];
+  for(let d=0;d<3;d++){
+    const n=[b,o,g][d],[vi,hi]=digitToAxes(n);
+    const[g1,g2]=pointToGF5(vi,axes),[g3,g4]=pointToGF5(hi,axes);
+    gf5res.push(''+g1+g2+g3+g4);
+  }
+
+  document.getElementById('result-row').innerHTML=
+    '<div class="result-card"><div class="rc-label">Character</div><div class="rc-val" style="color:#9B59B6;font-size:18px">\''+( e.ch===' '?'space':e.ch)+'\'</div></div>'+
+    '<div class="arrow">→</div>'+
+    '<div class="result-card"><div class="rc-label">Digit sum → rot</div><div class="rc-val">'+e.dsum+' → '+e.rot+'</div></div>'+
+    '<div class="arrow">→</div>'+
+    '<div class="result-card"><div class="rc-label">Planes</div><div class="rc-val"><span style="color:'+C.blue+'">'+b+'</span> <span style="color:'+C.orange+'">'+o+'</span> <span style="color:'+C.green+'">'+g+'</span></div></div>'+
+    '<div class="arrow">→</div>'+
+    '<div class="result-card"><div class="rc-label">L2 pairs</div><div class="rc-val" style="font-size:11px">'+
+      [b,o,g].map((n,d)=>'<span style="color:'+dc[d]+'">'+digitToAxes(n).join('·')+'</span>').join(' ')+'</div></div>'+
+    '<div class="arrow">→</div>'+
+    '<div class="result-card"><div class="rc-label">Axes now</div><div class="rc-val" style="font-size:11px">['+axes.join(' ')+']</div></div>'+
+    '<div class="arrow">→</div>'+
+    '<div class="result-card"><div class="rc-label">Output</div><div class="rc-val"><span style="color:'+C.blue+'">'+gf5res[0]+'</span><span style="color:'+C.orange+'">'+gf5res[1]+'</span><span style="color:'+C.green+'">'+gf5res[2]+'</span></div></div>';
+}
+
+renderCubeDisplay();
+drawBase(cubePoints(cubeLayout),[...startAxes]);
+
+// ── QR READER ────────────────────────────────────────────────
+async function readQRFromImage(input){
+  const file=input.files[0];
+  if(!file)return;
+  const err=document.getElementById('decode-err');
+  err.style.color='#1D9E75';
+  err.textContent='Reading QR code...';
+  input.value='';
+
+  // Try jsQR first (works in all browsers)
+  if(typeof jsQR !== 'undefined'){
+    try{
+      const reader=new FileReader();
+      reader.onload=function(e){
+        const img=new Image();
+        img.onload=function(){
+          const canvas=document.getElementById('qr-read-canvas');
+          canvas.width=img.width;
+          canvas.height=img.height;
+          const ctx2=canvas.getContext('2d');
+          ctx2.drawImage(img,0,0);
+          const imageData=ctx2.getImageData(0,0,canvas.width,canvas.height);
+          const code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'dontInvert'});
+          if(code){
+            document.getElementById('decode-input').value=code.data;
+            err.style.color='#1D9E75';
+            err.textContent='QR read successfully ('+code.data.length+' digits) — hit Decode';
+            setTimeout(()=>{err.textContent='';err.style.color='#D85A30';},4000);
+          } else {
+            err.style.color='#D85A30';
+            err.textContent='Could not read QR code — try a clearer or larger image';
+          }
+        };
+        img.src=e.target.result;
+      };
+      reader.readAsDataURL(file);
+      return;
+    }catch(e){
+      // fall through to BarcodeDetector
+    }
+  }
+
+  // Fallback: BarcodeDetector (Chrome Android / ChromeOS)
+  if('BarcodeDetector' in window){
+    try{
+      const detector=new BarcodeDetector({formats:['qr_code']});
+      const bitmap=await createImageBitmap(file);
+      const codes=await detector.detect(bitmap);
+      if(codes.length>0){
+        const data=codes[0].rawValue;
+        document.getElementById('decode-input').value=data;
+        err.style.color='#1D9E75';
+        err.textContent='QR read successfully ('+data.length+' digits) — hit Decode';
+        setTimeout(()=>{err.textContent='';err.style.color='#D85A30';},4000);
+      } else {
+        err.style.color='#D85A30';
+        err.textContent='No QR code found — try a clearer image';
+      }
+    }catch(e){
+      err.style.color='#D85A30';
+      err.textContent='Error: '+e.message;
+    }
+    return;
+  }
+
+  // Nothing worked
+  err.style.color='#D85A30';
+  err.textContent='QR library not loaded yet — make sure you are online for first use, then try again';
+}
+
+// ── QR CODE ──────────────────────────────────────────────────
+let qrInstance=null;
+
+function generateQR(){
+  const digits=encoded.filter(e=>!e.skip).map(e=>e.token).join('');
+  if(!digits){
+    document.getElementById('qr-err').textContent='Encode a message first';
+    return;
+  }
+  document.getElementById('qr-err').textContent='';
+  document.getElementById('qr-section').style.display='block';
+  
+  const container=document.getElementById('qr-code');
+  container.innerHTML='';
+  
+  const chars=encoded.filter(e=>!e.skip).length;
+  const digitCount=digits.length;
+  
+  // QR numeric mode holds ~7089 digits max
+  // warn if too long
+  if(digitCount>7089){
+    // Split into multiple QR codes
+    const chunks=[];
+    for(let i=0;i<digits.length;i+=7089) chunks.push(digits.slice(i,i+7089));
+    document.getElementById('qr-err').textContent='';
+    document.getElementById('qr-section').style.display='block';
+    container.innerHTML='';
+    
+    chunks.forEach((chunk,idx)=>{
+      const wrapper=document.createElement('div');
+      wrapper.style.cssText='display:inline-block;margin:8px;text-align:center;';
+      const label=document.createElement('div');
+      label.style.cssText='font-size:11px;color:#555;margin-bottom:4px;';
+      label.textContent='Part '+(idx+1)+' of '+chunks.length;
+      wrapper.appendChild(label);
+      const qDiv=document.createElement('div');
+      wrapper.appendChild(qDiv);
+      container.appendChild(wrapper);
+      new QRCode(qDiv,{
+        text:chunk,
+        width:320,
+        height:320,
+        colorDark:'#000000',
+        colorLight:'#ffffff',
+        correctLevel:QRCode.CorrectLevel.L
+      });
+    });
+    
+    document.getElementById('qr-info').innerHTML=
+      '<span class="qr-chars">'+chars+' characters — split into '+chunks.length+' QR codes</span><br>'+
+      'Scan each QR code in order and paste the digit strings together before decoding.';
+    document.getElementById('qr-section').scrollIntoView({behavior:'smooth',block:'nearest'});
+    return;
+  }
+  
+  try{
+    // Choose size and error correction based on message length
+    const qrSize = digitCount > 3000 ? 400 : digitCount > 1500 ? 320 : 260;
+    qrInstance=new QRCode(container,{
+      text:digits,
+      width:qrSize,
+      height:qrSize,
+      colorDark:'#000000',
+      colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.L
+    });
+    
+    document.getElementById('qr-info').innerHTML=
+      '<span class="qr-chars">'+chars+' characters encoded</span><br>'+
+      digitCount+' digits · QR size: '+qrSize+'px<br>'+
+      'Capacity used: '+Math.round(digitCount/7089*100)+'%  (max ~590 chars per QR)<br><br>'+
+      '<span style="color:#555;">Digit string preview:</span><br>'+
+      '<span style="font-family:monospace;font-size:10px;color:#666;word-break:break-all;">'+digits.slice(0,60)+(digits.length>60?'...':'')+'</span>';
+      
+    document.getElementById('qr-section').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }catch(err){
+    document.getElementById('qr-err').textContent='QR generation failed: '+err.message;
+  }
+}
+
+function clearQR(){
+  document.getElementById('qr-code').innerHTML='';
+  document.getElementById('qr-info').innerHTML='';
+  document.getElementById('qr-section').style.display='none';
+  qrInstance=null;
+}
+</script>
+
+
+</body></html>
