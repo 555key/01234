@@ -42,13 +42,11 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
 .rc-label{font-size:10px;color:#555;margin-bottom:2px;}
 .rc-val{font-size:13px;font-weight:500;font-family:monospace;color:#eee;}
 .arrow{font-size:16px;color:#444;align-self:center;}
-.qr-section{background:#111;border-radius:8px;padding:14px 16px;margin-top:1rem;border:1px solid #222;}
-.qr-title{font-size:11px;font-weight:500;color:#555;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;}
-#qr-container{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-top:10px;}
-#qr-code{background:#fff;padding:12px;border-radius:8px;display:inline-block;}
-#qr-code canvas,#qr-code img{display:block;}
-.qr-info{font-size:12px;color:#666;margin-top:8px;line-height:1.7;}
-.qr-chars{font-size:13px;color:#9B59B6;font-weight:500;}
+
+
+
+
+
 .custom-section{background:#111;border:1px solid #222;border-radius:8px;padding:12px;margin-bottom:10px;display:none;}
 .custom-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;}
 .sym-input{width:42px;height:36px;text-align:center;font-size:20px;padding:2px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#eee;}
@@ -61,8 +59,6 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
 .cb3{background:#ffffff;outline:1px solid #555;}
 .cb4{background:#111111;}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tibetan:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -72,11 +68,7 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
 
 <div class="key-section">
   <div class="key-title">Key Configuration</div>
-  <div class="row" style="margin-bottom:10px;">
-    <button onclick="copyKey()" class="primary">&#128273; Copy Key</button>
-    <button onclick="pasteKey()">&#128203; Paste Key</button>
-    <span class="err" id="key-err" style="color:#1D9E75;"></span>
-  </div>
+
   <div class="row">
     <label>Cube layout (27 letters + space):</label>
     <button onclick="randomCube()">Randomise</button>
@@ -84,7 +76,7 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
     <button onclick="applyCubeInput()">Apply</button>
     <span class="err" id="cube-err"></span>
   </div>
-  <textarea id="cube-display" rows="2" spellcheck="false" style="width:100%;letter-spacing:0.08em;" oninput="liveValidateCube()"></textarea>
+  <textarea id="cube-display" rows="2" spellcheck="false" style="width:100%;letter-spacing:0.2em;font-size:22px;font-family:monospace;" oninput="liveValidateCube()"></textarea>
   <div id="cube-note" style="font-size:11px;color:#555;margin-top:3px;">Starting arrangement — updates as you step through encoded letters</div>
   <hr class="divider">
   <div class="row">
@@ -105,6 +97,21 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
     <label>Current GF(5) axes:</label>
     <div id="current-axes" style="font-family:monospace;font-size:13px;color:#eee;background:#1a1a1a;padding:4px 10px;border-radius:6px;border:1px solid #333;">[0 1 2 3 4]</div>
   </div>
+  <hr class="divider">
+  <div class="row">
+    <button onclick="copyKey()" class="primary">&#128273; Copy Key</button>
+    <button onclick="togglePasteBox()">&#128203; Paste Key</button>
+    <span class="err" id="key-err" style="color:#1D9E75;"></span>
+  </div>
+  <div id="paste-box" style="display:none;margin-top:6px;">
+    <div class="row">
+      <textarea id="paste-input" rows="2" placeholder="Paste key here..." style="width:100%;font-size:11px;"></textarea>
+    </div>
+    <div class="row">
+      <button onclick="applyPastedKey()" class="primary">Apply Key</button>
+      <button onclick="document.getElementById('paste-box').style.display='none';">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <hr class="divider">
@@ -114,13 +121,6 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
     <label>Message:</label>
     <textarea id="msg-input" rows="4" placeholder="type a message..." style="width:100%;vertical-align:top;"></textarea>
     <button class="primary" onclick="encodeMessage()" style="vertical-align:top;">Encode</button>
-    <button onclick="generateQR()" style="vertical-align:top;">QR Code &#9638;</button>
-    <div style="display:inline-flex;border:1px solid #333;border-radius:6px;overflow:hidden;vertical-align:top;">
-      <button onclick="downloadHTML()" style="border:none;border-radius:0;padding:7px 12px;font-size:13px;border-right:1px solid #333;">&#8595; HTML</button>
-      <button onclick="downloadPDF()" style="border:none;border-radius:0;padding:7px 12px;font-size:13px;border-right:1px solid #333;">&#8595; PDF</button>
-      <label for="pdf-upload" style="padding:7px 12px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;margin:0;display:flex;align-items:center;">&#8593; Upload</label>
-      <input type="file" id="pdf-upload" accept=".html,.htm" style="display:none;" onchange="readPDF(this)"/>
-    </div>
   </div>
   <div class="toggle-row">
     <button class="toggle-btn active" id="btn-num" onclick="setOutputMode('numbers')">Numbers (0–4)</button>
@@ -145,11 +145,13 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
   </div>
   <div style="font-size:12px;color:#555;margin-bottom:6px;">Click any token to trace — cube shows its rotated state at each letter:</div>
   <div class="output-box" id="output-box"></div>
-  <div class="nav-row">
-    <button onclick="prevLetter()">← Prev</button>
-    <button onclick="nextLetter()">Next →</button>
-    <span class="nav-info" id="nav-info"></span>
-    <button onclick="autoPlay()" id="play-btn">▶ Auto</button>
+  <div style="margin-bottom:8px;">
+    <div style="display:inline-flex;border:1px solid #333;border-radius:6px;overflow:hidden;">
+      <button onclick="downloadHTML()" style="border:none;border-radius:0;padding:7px 12px;font-size:13px;border-right:1px solid #333;">&#8595; HTML</button>
+      <button onclick="downloadPDF()" style="border:none;border-radius:0;padding:7px 12px;font-size:13px;border-right:1px solid #333;">&#8595; PDF</button>
+      <label for="pdf-upload" style="padding:7px 12px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;margin:0;display:flex;align-items:center;">&#8593; Upload</label>
+      <input type="file" id="pdf-upload" accept=".html,.htm" style="display:none;" onchange="readPDF(this)"/>
+    </div>
   </div>
   <div class="info" id="info"></div>
 </div>
@@ -164,28 +166,25 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
   <div class="row">
     <button class="primary" onclick="decodeMessage()">Decode</button>
     <button onclick="document.getElementById('decode-input').value='';document.getElementById('decode-output').textContent='';">Clear</button>
-    <label for="qr-upload" style="padding:7px 14px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;">&#128247; Upload QR Image</label>
-    <input type="file" id="qr-upload" accept="image/*" style="display:none;" onchange="readQRFromImage(this)"/>
     <span class="err" id="decode-err"></span>
   </div>
-  <canvas id="qr-read-canvas" style="display:none;"></canvas>
-  <div class="output-box" id="decode-output" style="color:#1D9E75;min-height:36px;"></div>
+    <div class="output-box" id="decode-output" style="color:#1D9E75;min-height:36px;"></div>
+  <div class="nav-row" style="margin-top:8px;">
+    <button onclick="prevLetter()">← Prev</button>
+    <button onclick="nextLetter()">Next →</button>
+    <span class="nav-info" id="nav-info"></span>
+    <button onclick="autoPlay()" id="play-btn">▶ Auto</button>
+  </div>
 </div>
 
-<div class="qr-section" id="qr-section" style="display:none;">
-  <div class="qr-title">QR Code</div>
   <div class="row">
-    <button class="primary" onclick="generateQR()">Generate QR from encoded output</button>
     <button onclick="clearQR()">Clear</button>
-    <span id="qr-err" class="err"></span>
   </div>
   <div id="qr-container">
     <div id="qr-code"></div>
     <div>
       <div class="qr-info" id="qr-info"></div>
       <div style="margin-top:10px;font-size:11px;color:#444;">
-        Scan with any QR reader to get the encoded digit string.<br>
-        Recipient pastes it into the Decode box with the same key.
       </div>
     </div>
   </div>
@@ -435,8 +434,16 @@ function copyKey(){
   });
 }
 
-function pasteKey(){
-  const input=prompt('Paste key here:');
+function togglePasteBox(){
+  const box=document.getElementById('paste-box');
+  box.style.display=box.style.display==='none'?'block':'none';
+  if(box.style.display==='block')document.getElementById('paste-input').focus();
+}
+
+function applyPastedKey(){
+  const input=document.getElementById('paste-input').value;
+  document.getElementById('paste-box').style.display='none';
+  document.getElementById('paste-input').value='';
   if(!input)return;
   try{
     const key=JSON.parse(input.trim());
@@ -865,11 +872,7 @@ async function readQRFromImage(input){
       reader.onload=function(e){
         const img=new Image();
         img.onload=function(){
-          const canvas=document.getElementById('qr-read-canvas');
-          canvas.width=img.width;
-          canvas.height=img.height;
-          const ctx2=canvas.getContext('2d');
-          ctx2.drawImage(img,0,0);
+          
           const imageData=ctx2.getImageData(0,0,canvas.width,canvas.height);
           const code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'dontInvert'});
           if(code){
@@ -1034,91 +1037,7 @@ function readPDF(input){
 }
 
 // ── QR CODE ──────────────────────────────────────────────────
-let qrInstance=null;
 
-function generateQR(){
-  const digits=encoded.filter(e=>!e.skip).map(e=>e.token).join('');
-  if(!digits){
-    document.getElementById('qr-err').textContent='Encode a message first';
-    return;
-  }
-  document.getElementById('qr-err').textContent='';
-  document.getElementById('qr-section').style.display='block';
-  
-  const container=document.getElementById('qr-code');
-  container.innerHTML='';
-  
-  const chars=encoded.filter(e=>!e.skip).length;
-  const digitCount=digits.length;
-  
-  // QR numeric mode holds ~7089 digits max
-  // warn if too long
-  if(digitCount>7089){
-    // Split into multiple QR codes
-    const chunks=[];
-    for(let i=0;i<digits.length;i+=7089) chunks.push(digits.slice(i,i+7089));
-    document.getElementById('qr-err').textContent='';
-    document.getElementById('qr-section').style.display='block';
-    container.innerHTML='';
-    
-    chunks.forEach((chunk,idx)=>{
-      const wrapper=document.createElement('div');
-      wrapper.style.cssText='display:inline-block;margin:8px;text-align:center;';
-      const label=document.createElement('div');
-      label.style.cssText='font-size:11px;color:#555;margin-bottom:4px;';
-      label.textContent='Part '+(idx+1)+' of '+chunks.length;
-      wrapper.appendChild(label);
-      const qDiv=document.createElement('div');
-      wrapper.appendChild(qDiv);
-      container.appendChild(wrapper);
-      new QRCode(qDiv,{
-        text:chunk,
-        width:320,
-        height:320,
-        colorDark:'#000000',
-        colorLight:'#ffffff',
-        correctLevel:QRCode.CorrectLevel.L
-      });
-    });
-    
-    document.getElementById('qr-info').innerHTML=
-      '<span class="qr-chars">'+chars+' characters — split into '+chunks.length+' QR codes</span><br>'+
-      'Scan each QR code in order and paste the digit strings together before decoding.';
-    document.getElementById('qr-section').scrollIntoView({behavior:'smooth',block:'nearest'});
-    return;
-  }
-  
-  try{
-    // Choose size and error correction based on message length
-    const qrSize = digitCount > 3000 ? 400 : digitCount > 1500 ? 320 : 260;
-    qrInstance=new QRCode(container,{
-      text:digits,
-      width:qrSize,
-      height:qrSize,
-      colorDark:'#000000',
-      colorLight:'#ffffff',
-      correctLevel:QRCode.CorrectLevel.L
-    });
-    
-    document.getElementById('qr-info').innerHTML=
-      '<span class="qr-chars">'+chars+' characters encoded</span><br>'+
-      digitCount+' digits · QR size: '+qrSize+'px<br>'+
-      'Capacity used: '+Math.round(digitCount/7089*100)+'%  (max ~590 chars per QR)<br><br>'+
-      '<span style="color:#555;">Digit string preview:</span><br>'+
-      '<span style="font-family:monospace;font-size:10px;color:#666;word-break:break-all;">'+digits.slice(0,60)+(digits.length>60?'...':'')+'</span>';
-      
-    document.getElementById('qr-section').scrollIntoView({behavior:'smooth',block:'nearest'});
-  }catch(err){
-    document.getElementById('qr-err').textContent='QR generation failed: '+err.message;
-  }
-}
-
-function clearQR(){
-  document.getElementById('qr-code').innerHTML='';
-  document.getElementById('qr-info').innerHTML='';
-  document.getElementById('qr-section').style.display='none';
-  qrInstance=null;
-}
 </script>
 <div class="info-box" style="margin-top:2rem;">
   <span style="color:#1D9E75;font-weight:500;">How it works:</span> After each character is encoded, the 12 output digits are summed and that sum (mod 27) determines how far the cube rotates for the next character. The same letter typed repeatedly produces completely different output each time because the output itself drives the next rotation — there is no fixed cycle.
