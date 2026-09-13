@@ -116,9 +116,10 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
     <button class="primary" onclick="encodeMessage()" style="vertical-align:top;">Encode</button>
     <button onclick="generateQR()" style="vertical-align:top;">QR Code &#9638;</button>
     <div style="display:inline-flex;border:1px solid #333;border-radius:6px;overflow:hidden;vertical-align:top;">
-      <button onclick="downloadPDF()" style="border:none;border-radius:0;padding:7px 12px;font-size:13px;border-right:1px solid #333;">&#8595; Download</button>
+      <button onclick="downloadHTML()" style="border:none;border-radius:0;padding:7px 12px;font-size:13px;border-right:1px solid #333;">&#8595; HTML</button>
+      <button onclick="downloadPDF()" style="border:none;border-radius:0;padding:7px 12px;font-size:13px;border-right:1px solid #333;">&#8595; PDF</button>
       <label for="pdf-upload" style="padding:7px 12px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;margin:0;display:flex;align-items:center;">&#8593; Upload</label>
-      <input type="file" id="pdf-upload" accept=".html,.htm,.pdf" style="display:none;" onchange="readPDF(this)"/>
+      <input type="file" id="pdf-upload" accept=".html,.htm" style="display:none;" onchange="readPDF(this)"/>
     </div>
   </div>
   <div class="toggle-row">
@@ -919,6 +920,32 @@ async function readQRFromImage(input){
 }
 
 // ── PDF DOWNLOAD ─────────────────────────────────────────────
+function downloadHTML(){
+  if(!encoded.length){alert('Encode a message first');return;}
+  const box=document.getElementById('output-box');
+  const digits=encoded.filter(e=>!e.skip).map(e=>e.token).join('');
+  const outputHTML=box.innerHTML;
+  const html=`<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title></title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tibetan&display=swap" rel="stylesheet">
+<style>
+  body{background:#000;color:#fff;padding:40px;font-family:Arial,sans-serif;margin:0;}
+  .output{font-size:18px;line-height:2.2;word-break:break-all;letter-spacing:1px;}
+  .data{font-size:1px;color:#000;user-select:none;position:absolute;top:-9999px;}
+</style>
+</head><body>
+<div class="output">${outputHTML}</div>
+<div class="data">QUINCUNX_DATA:${digits}</div>
+</body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='quincunx_encoded.html';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+
 function downloadPDF(){
   if(!encoded.length){alert('Encode a message first');return;}
   const box=document.getElementById('output-box');
