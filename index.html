@@ -70,10 +70,6 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
 <h1>Geometric Cipher System v2</h1>
 <p class="subtitle">3×3×3 Lattice · Output-Driven Cube Rotation · GF(5) Rotating Key</p>
 
-<div class="info-box">
-  <span style="color:#1D9E75;font-weight:500;">How it works:</span> After each character is encoded, the 12 output digits are summed and that sum (mod 27) determines how far the cube rotates for the next character. The same letter typed repeatedly produces completely different output each time because the output itself drives the next rotation — there is no fixed cycle.
-</div>
-
 <div class="key-section">
   <div class="key-title">Key Configuration</div>
   <div class="row" style="margin-bottom:10px;">
@@ -114,14 +110,16 @@ canvas{display:block;width:100%;border-radius:8px;border:1px solid #222;margin-t
 <hr class="divider">
 
 <div class="section">
-  <div class="row">
+  <div class="row" style="flex-direction:column;align-items:stretch;">
     <label>Message:</label>
-    <textarea id="msg-input" rows="2" placeholder="type a message..." style="width:300px;vertical-align:top;"></textarea>
+    <textarea id="msg-input" rows="4" placeholder="type a message..." style="width:100%;vertical-align:top;"></textarea>
     <button class="primary" onclick="encodeMessage()" style="vertical-align:top;">Encode</button>
     <button onclick="generateQR()" style="vertical-align:top;">QR Code &#9638;</button>
-    <button onclick="downloadPDF()" style="vertical-align:top;">&#8595; PDF</button>
-    <label for="pdf-upload" style="padding:7px 14px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;vertical-align:top;">&#8593; Read PDF</label>
-    <input type="file" id="pdf-upload" accept=".html,.htm" style="display:none;" onchange="readPDF(this)"/>
+    <div style="display:inline-flex;border:1px solid #333;border-radius:6px;overflow:hidden;vertical-align:top;">
+      <button onclick="downloadPDF()" style="border:none;border-radius:0;padding:7px 12px;font-size:13px;border-right:1px solid #333;">&#8595; Download</button>
+      <label for="pdf-upload" style="padding:7px 12px;background:#1a1a1a;color:#aaa;font-size:13px;cursor:pointer;margin:0;display:flex;align-items:center;">&#8593; Upload</label>
+      <input type="file" id="pdf-upload" accept=".html,.htm,.pdf" style="display:none;" onchange="readPDF(this)"/>
+    </div>
   </div>
   <div class="toggle-row">
     <button class="toggle-btn active" id="btn-num" onclick="setOutputMode('numbers')">Numbers (0–4)</button>
@@ -948,11 +946,22 @@ function downloadPDF(){
 
   const blob=new Blob([html],{type:'text/html'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download='quincunx_encoded.html';
-  a.click();
-  URL.revokeObjectURL(url);
+  // Open in new tab and trigger print dialog
+  const win=window.open(url,'_blank');
+  if(win){
+    win.onload=function(){
+      setTimeout(()=>{
+        win.print();
+      },800);
+    };
+  } else {
+    // Fallback if popup blocked - just download
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='quincunx_encoded.html';
+    a.click();
+  }
+  setTimeout(()=>URL.revokeObjectURL(url),10000);
 }
 
 // ── HTML FILE UPLOAD / READ ──────────────────────────────────
@@ -1084,5 +1093,8 @@ function clearQR(){
   qrInstance=null;
 }
 </script>
+<div class="info-box" style="margin-top:2rem;">
+  <span style="color:#1D9E75;font-weight:500;">How it works:</span> After each character is encoded, the 12 output digits are summed and that sum (mod 27) determines how far the cube rotates for the next character. The same letter typed repeatedly produces completely different output each time because the output itself drives the next rotation — there is no fixed cycle.
+</div>
 </body>
 </html>
